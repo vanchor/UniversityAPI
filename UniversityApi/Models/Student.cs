@@ -1,4 +1,6 @@
-﻿namespace UniversityApi.Models
+﻿using System.Text.Json.Serialization;
+
+namespace UniversityApi.Models
 {
     public class Student
     {
@@ -7,5 +9,8 @@
         public string LastName { get; set; }
         public int age { get; set; }
 
+        [JsonIgnore]
+        public Group? Group { get; set; }
+        public int GroupId { get; set; }
     }
 }

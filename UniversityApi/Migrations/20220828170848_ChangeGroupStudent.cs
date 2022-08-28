@@ -4,7 +4,7 @@
 
 namespace UniversityApi.Migrations
 {
-    public partial class InitDb : Migration
+    public partial class ChangeGroupStudent : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,7 +44,7 @@ namespace UniversityApi.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     age = table.Column<int>(type: "int", nullable: false),
-                    GroupId = table.Column<int>(type: "int", nullable: true)
+                    GroupId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,37 +53,9 @@ namespace UniversityApi.Migrations
                         name: "FK_Students_Groups_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Groups",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GroupSubject",
-                columns: table => new
-                {
-                    GroupsId = table.Column<int>(type: "int", nullable: false),
-                    SubjectsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GroupSubject", x => new { x.GroupsId, x.SubjectsId });
-                    table.ForeignKey(
-                        name: "FK_GroupSubject_Groups_GroupsId",
-                        column: x => x.GroupsId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GroupSubject_Subjects_SubjectsId",
-                        column: x => x.SubjectsId,
-                        principalTable: "Subjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GroupSubject_SubjectsId",
-                table: "GroupSubject",
-                column: "SubjectsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_GroupId",
@@ -93,9 +65,6 @@ namespace UniversityApi.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "GroupSubject");
-
             migrationBuilder.DropTable(
                 name: "Students");
 
