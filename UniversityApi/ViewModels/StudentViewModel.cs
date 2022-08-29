@@ -1,6 +1,6 @@
-﻿namespace UniversityApi.Models
+﻿namespace UniversityApi.ViewModels
 {
-    public class StudentCreate
+    public class StudentViewModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

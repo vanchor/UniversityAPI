@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityApi.Models;
+using UniversityApi.ViewModels;
 
 namespace UniversityApi.Controllers
 {
@@ -79,7 +80,7 @@ namespace UniversityApi.Controllers
 
         // PUT: api/Students/5
         [HttpPut("{id}")]
-        public IActionResult PutStudent(int id, StudentCreate student)
+        public IActionResult PutStudent(int id, StudentViewModel student)
         {
             if (_context.Groups.Find(student.GroupId) == null)
                 return BadRequest("Incorrect GroupId");
@@ -113,7 +114,7 @@ namespace UniversityApi.Controllers
 
         // POST: api/Students
        [HttpPost]
-        public ActionResult<Student> PostStudent(StudentCreate student)
+        public ActionResult<Student> PostStudent(StudentViewModel student)
         {
             if (_context.Students == null)
                 return Problem("Entity set 'UniversityContext.Students'  is null.");

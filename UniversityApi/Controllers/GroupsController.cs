@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityApi.Models;
+using UniversityApi.ViewModels;
 
 namespace UniversityApi.Controllers
 {
@@ -70,7 +71,7 @@ namespace UniversityApi.Controllers
 
         // PUT: api/Groups/id
         [HttpPut("{id}")]
-        public ActionResult PutGroup(int id, GroupCreate group)
+        public ActionResult PutGroup(int id, GroupViewModel group)
         {
             if (_context.Groups == null) return NotFound();
 
@@ -101,7 +102,7 @@ namespace UniversityApi.Controllers
 
         // POST: api/Groups
         [HttpPost]
-        public ActionResult PostGroup(GroupCreate group)
+        public ActionResult PostGroup(GroupViewModel group)
         {
             if (_context.Groups == null)
                 return Problem("Entity set 'UniversityContext.Groups'  is null.");

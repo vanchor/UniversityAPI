@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace UniversityApi.Models
+namespace UniversityApi.ViewModels
 {
-    public class GroupCreate
+    public class GroupViewModel
     {
         [Required]
         public string GradeName { get; set; }
