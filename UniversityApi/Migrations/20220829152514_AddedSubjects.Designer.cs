@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UniversityApi.Models;
 
@@ -10,9 +11,10 @@ using UniversityApi.Models;
 namespace UniversityApi.Migrations
 {
     [DbContext(typeof(UniversityContext))]
-    partial class UniversityContextModelSnapshot : ModelSnapshot
+    [Migration("20220829152514_AddedSubjects")]
+    partial class AddedSubjects
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,12 +28,12 @@ namespace UniversityApi.Migrations
                     b.Property<int>("GroupsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubjectsId")
+                    b.Property<int>("subjectsId")
                         .HasColumnType("int");
 
-                    b.HasKey("GroupsId", "SubjectsId");
+                    b.HasKey("GroupsId", "subjectsId");
 
-                    b.HasIndex("SubjectsId");
+                    b.HasIndex("subjectsId");
 
                     b.ToTable("GroupSubject");
                 });
@@ -117,7 +119,7 @@ namespace UniversityApi.Migrations
 
                     b.HasOne("UniversityApi.Models.Subject", null)
                         .WithMany()
-                        .HasForeignKey("SubjectsId")
+                        .HasForeignKey("subjectsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

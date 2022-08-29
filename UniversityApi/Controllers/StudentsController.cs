@@ -62,6 +62,21 @@ namespace UniversityApi.Controllers
             return group;
         }
 
+        // GET: api/Students/5/Subjects
+        [HttpGet("{id}/Subjects")]
+        public ActionResult<IEnumerable<Subject>> GetGroupSubjects(int id)
+        {
+            if (_context.Students == null)
+                return NotFound();
+
+            var student = _context.Students.Find(id);
+
+            if (student == null)
+                return NotFound();
+
+            return new GroupsController(_context).GetGroupSubjects(student.GroupId);
+        }
+
         // PUT: api/Students/5
         [HttpPut("{id}")]
         public IActionResult PutStudent(int id, StudentCreate student)

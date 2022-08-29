@@ -52,6 +52,22 @@ namespace UniversityApi.Controllers
             return _context.Students.Where(st => st.GroupId == id).ToList();
         }
 
+        // GET: api/Groups/2/Subjects
+        [HttpGet("{id}/Subjects")]
+        public ActionResult<IEnumerable<Subject>> GetGroupSubjects(int id)
+        {
+            if (_context.Groups == null)
+                return NotFound();
+
+            if (_context.Groups.Find(id) == null)
+                return NotFound();
+
+            return _context.Groups
+                    .Where(g => g.Id == id)
+                    .Include(st => st.Subjects)
+                    .First().Subjects.ToList();
+        }
+
         // PUT: api/Groups/id
         [HttpPut("{id}")]
         public ActionResult PutGroup(int id, GroupCreate group)
