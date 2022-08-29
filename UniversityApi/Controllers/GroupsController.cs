@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityApi.Models;
 
 namespace UniversityApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class GroupsController : ControllerBase
     {
         private readonly UniversityContext _context;
@@ -22,48 +17,45 @@ namespace UniversityApi.Controllers
 
         // GET: api/Groups
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
+        public ActionResult<IEnumerable<Group>> GetGroups()
         {
-          if (_context.Groups == null)
-          {
-              return NotFound();
-          }
-            return await _context.Groups.ToListAsync();
+            if (_context == null) return NotFound();
+
+            return _context.Groups;
         }
 
-        // GET: api/Groups/5
+        // GET: api/Groups/1
         [HttpGet("{id}")]
-        public async Task<ActionResult<Group>> GetGroup(int id)
+        public ActionResult<Group> GetGroup(int id)
         {
-          if (_context.Groups == null)
-          {
-              return NotFound();
-          }
-            var @group = await _context.Groups.FindAsync(id);
-
-            if (@group == null)
-            {
+            if (_context.Groups == null)
                 return NotFound();
-            }
 
-            return @group;
+            var group = _context.Groups.Find(id);
+            if (group == null)
+                return NotFound();
+
+            return group;
         }
 
-        // PUT: api/Groups/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGroup(int id, Group @group)
-        {
-            if (id != @group.Id)
-            {
-                return BadRequest();
-            }
+        // GET: api/Groups/1/Students
+        // ============================
 
-            _context.Entry(@group).State = EntityState.Modified;
+        // PUT: api/Groups/id
+        [HttpPut("{id}")]
+        public ActionResult PutGroup(int id, GroupCreate group)
+        {
+            if (_context.Groups == null) return NotFound();
+
+            _context.Entry(new Group(){
+                    Id = id,
+                    GradeName = group.GradeName,
+                    Section = group.Section
+                }).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -81,36 +73,37 @@ namespace UniversityApi.Controllers
         }
 
         // POST: api/Groups
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Group>> PostGroup(Group @group)
-        {
-          if (_context.Groups == null)
-          {
-              return Problem("Entity set 'UniversityContext.Groups'  is null.");
-          }
-            _context.Groups.Add(@group);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGroup", new { id = @group.Id }, @group);
-        }
-
-        // DELETE: api/Groups/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGroup(int id)
+        public ActionResult PostGroup(GroupCreate group)
         {
             if (_context.Groups == null)
-            {
-                return NotFound();
-            }
-            var @group = await _context.Groups.FindAsync(id);
-            if (@group == null)
-            {
-                return NotFound();
-            }
+                return Problem("Entity set 'UniversityContext.Groups'  is null.");
 
-            _context.Groups.Remove(@group);
-            await _context.SaveChangesAsync();
+            var g = new Group()
+            {
+                GradeName = group.GradeName,
+                Section = group.Section
+            };
+
+            _context.Groups.Add(g);
+            _context.SaveChanges();
+
+            return CreatedAtAction("GetGroups", new { Id = 1 }, g);
+        }
+
+        // DELETE : api/Groups/1
+        [HttpDelete("{id}")]
+        public IActionResult DeleteGroup(int id)
+        {
+            if (_context == null)
+                return Problem("Entity set 'UniversityContext.Groups'  is null.");
+
+            var group = _context.Groups.Find(id);
+            if (group == null)
+                return NotFound();
+
+            _context.Groups.Remove(group);
+            _context.SaveChanges();
 
             return NoContent();
         }

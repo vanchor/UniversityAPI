@@ -22,48 +22,46 @@ namespace UniversityApi.Controllers
 
         // GET: api/Students
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
+        public ActionResult<IEnumerable<Student>> GetStudents()
         {
-            if (_context.Students == null)
-            {
-                return NotFound();
-            }
-            return await _context.Students.ToListAsync();
+            if (_context.Students == null) return NotFound();
+
+            return _context.Students.ToList();
         }
 
         // GET: api/Students/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Student>> GetStudent(int id)
+        public ActionResult<Student> GetStudent(int id)
         {
-            if (_context.Students == null)
-            {
+            if (_context.Students == null) 
                 return NotFound();
-            }
-            var student = await _context.Students.FindAsync(id);
 
-            if (student == null)
-            {
+            var student = _context.Students.Find(id);
+
+            if (student == null) 
                 return NotFound();
-            }
 
             return student;
         }
 
         // PUT: api/Students/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutStudent(int id, Student student)
+        public IActionResult PutStudent(int id, StudentCreate student)
         {
-            if (id != student.Id)
-            {
-                return BadRequest();
-            }
+            if (_context.Groups.Find(student.GroupId) == null)
+                return BadRequest("Incorrect GroupId");
 
-            _context.Entry(student).State = EntityState.Modified;
+            _context.Entry(new Student(){
+                    Id = id,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    age = student.age,
+                    GroupId = student.GroupId
+                }).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -83,35 +81,41 @@ namespace UniversityApi.Controllers
         // POST: api/Students
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Student>> PostStudent(Student student)
+        public ActionResult<Student> PostStudent(StudentCreate student)
         {
             if (_context.Students == null)
-            {
                 return Problem("Entity set 'UniversityContext.Students'  is null.");
-            }
 
-            _context.Students.Add(student);
-            await _context.SaveChangesAsync();
+            if (_context.Groups.Find(student.GroupId) == null)
+                return BadRequest("Incorrect GroupId");
 
-            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
+
+            var st = new Student(){
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                age = student.age,
+                GroupId = student.GroupId
+            };
+
+            _context.Students.Add(st);
+            _context.SaveChanges();
+
+            return CreatedAtAction("GetStudent", new { id = st.Id }, st);
         }
 
         // DELETE: api/Students/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStudent(int id)
+        public IActionResult DeleteStudent(int id)
         {
             if (_context.Students == null)
-            {
                 return NotFound();
-            }
-            var student = await _context.Students.FindAsync(id);
+
+            var student = _context.Students.Find(id);
             if (student == null)
-            {
                 return NotFound();
-            }
 
             _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return NoContent();
         }
