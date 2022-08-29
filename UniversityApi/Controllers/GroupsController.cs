@@ -39,7 +39,18 @@ namespace UniversityApi.Controllers
         }
 
         // GET: api/Groups/1/Students
-        // ============================
+        [HttpGet("{id}/Students")]
+        public ActionResult<IEnumerable<Student>> GetGroupStudents(int id)
+        {
+            if (_context.Groups == null)
+                return NotFound();
+
+            var group = _context.Groups.Find(id);
+            if (group == null)
+                return NotFound();
+
+            return _context.Students.Where(st => st.GroupId == id).ToList();
+        }
 
         // PUT: api/Groups/id
         [HttpPut("{id}")]
@@ -101,6 +112,9 @@ namespace UniversityApi.Controllers
             var group = _context.Groups.Find(id);
             if (group == null)
                 return NotFound();
+
+            if (_context.Students.Where(st => st.GroupId == id) != null)
+                return Problem("The group cannot be deleted because there are students in it.");
 
             _context.Groups.Remove(group);
             _context.SaveChanges();

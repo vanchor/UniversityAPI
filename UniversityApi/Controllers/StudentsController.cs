@@ -44,6 +44,24 @@ namespace UniversityApi.Controllers
             return student;
         }
 
+        // GET: api/Students/5/Group
+        [HttpGet("{id}/Group")]
+        public ActionResult<Group> GetStudentsGroup(int id)
+        {
+            if (_context.Students == null)
+                return NotFound();
+
+            var student = _context.Students.Find(id);
+            if (student == null)
+                return NotFound();
+
+            var group = _context.Groups.Find(student.GroupId);
+            if (group == null)
+                return NotFound();
+
+            return group;
+        }
+
         // PUT: api/Students/5
         [HttpPut("{id}")]
         public IActionResult PutStudent(int id, StudentCreate student)
@@ -79,8 +97,7 @@ namespace UniversityApi.Controllers
         }
 
         // POST: api/Students
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+       [HttpPost]
         public ActionResult<Student> PostStudent(StudentCreate student)
         {
             if (_context.Students == null)
