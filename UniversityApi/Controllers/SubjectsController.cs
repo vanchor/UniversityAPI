@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
@@ -89,7 +88,7 @@ namespace UniversityApi.Controllers
             return NoContent();
         }
 
-        // PATСH: api/Subjects/1
+       /* // PATСH: api/Subjects/1
         [HttpPatch("{id}")]
         public ActionResult<Subject> PatctSubject(int id, [FromBody] JsonPatchDocument subjectVM)
         {
@@ -104,7 +103,7 @@ namespace UniversityApi.Controllers
             _context.SaveChanges();
 
             return subject;
-        }
+        }*/
 
         private Subject SubjectVmToSubject(SubjectViewModel subjectVM)
         {

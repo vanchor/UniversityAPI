@@ -69,6 +69,28 @@ namespace UniversityApi.Controllers
                     .First().Subjects.ToList();
         }
 
+        // POST: api/Groups/{id}/Subjects
+        [HttpPost("{id}/Subjects/")]
+        public ActionResult PostGroup(int id, [FromBody] int SubjectId)
+        {
+            if (_context.Groups == null)
+                return Problem("Entity set 'UniversityContext.Groups'  is null.");
+
+            var g = _context.Groups.Find(id);
+            if (g == null)
+                return NotFound("No group with such id");
+
+            var subject = _context.Subjects.Find(SubjectId);
+            if (subject == null)
+                return NotFound("No subject with such id");
+
+            g.Subjects.Add(subject);
+            _context.SaveChanges();
+
+            return CreatedAtAction("GetGroups", new { Id = 1 }, g);
+        }
+
+
         // PUT: api/Groups/id
         [HttpPut("{id}")]
         public ActionResult PutGroup(int id, GroupViewModel group)

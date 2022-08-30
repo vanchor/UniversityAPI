@@ -14,6 +14,7 @@ namespace UniversityApi.Models
         [JsonIgnore]
         public ICollection<Student>? Students { get; set; }
 
+        [JsonIgnore]
         public ICollection<Subject>? Subjects { get; set; } = new List<Subject>();
     }
 }

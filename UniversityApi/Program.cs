@@ -13,7 +13,7 @@ builder.Services.AddDbContext<UniversityContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 
-builder.Services.AddControllers().AddNewtonsoftJson();
+//builder.Services.AddControllers().AddNewtonsoftJson();
 
 var app = builder.Build();
 
