@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using UniversityApi.Models;
+using UniversityApi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+//
+builder.Services.AddScoped<IRepository<Student>, StudentRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 object value = builder.Services.AddSwaggerGen();
