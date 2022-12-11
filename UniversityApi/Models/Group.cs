@@ -8,13 +8,12 @@ namespace UniversityApi.Models
         public int Id { get; set; }
         
         [Required]
-        public string GradeName { get; set; }
-        public string Section { get; set; }
+        public string GradeName { get; set; } = null!;
+        public string Department { get; set; } = null!;
 
-        [JsonIgnore]
+        public int Semester { get; set; }
+
         public ICollection<Student>? Students { get; set; }
-
-        [JsonIgnore]
         public ICollection<Subject>? Subjects { get; set; } = new List<Subject>();
     }
 }
