@@ -34,12 +34,12 @@ namespace UniversityApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<Student> GetStudent(int id)
         {
-            if (_context.Students == null) 
+            if (_context.Students == null)
                 return NotFound();
 
             var student = _context.Students.Find(id);
 
-            if (student == null) 
+            if (student == null)
                 return NotFound();
 
             return student;
@@ -56,7 +56,10 @@ namespace UniversityApi.Controllers
             if (student == null)
                 return NotFound();
 
-            var group = _context.Groups.Find(student.GroupId);
+            var group = _context.Groups
+                .Include(x => x.Students)
+                .Include(x => x.Subjects)
+                .FirstOrDefault(x => x.Id == student.GroupId);
             if (group == null)
                 return NotFound();
 
@@ -65,13 +68,12 @@ namespace UniversityApi.Controllers
 
         // GET: api/Students/5/Subjects
         [HttpGet("{id}/Subjects")]
-        public ActionResult<IEnumerable<Subject>> GetGroupSubjects(int id)
+        public ActionResult<IEnumerable<Subject>?> GetGroupSubjects(int id)
         {
             if (_context.Students == null)
                 return NotFound();
 
             var student = _context.Students.Find(id);
-
             if (student == null)
                 return NotFound();
 
@@ -85,13 +87,17 @@ namespace UniversityApi.Controllers
             if (_context.Groups.Find(student.GroupId) == null)
                 return BadRequest("Incorrect GroupId");
 
-            _context.Entry(new Student(){
-                    Id = id,
-                    FirstName = student.FirstName,
-                    LastName = student.LastName,
-                    age = student.age,
-                    GroupId = student.GroupId
-                }).State = EntityState.Modified;
+            _context.Entry(new Student()
+            {
+                Id = id,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Pasel = student.Pasel,
+                PhoneNumber = student.PhoneNumber,
+                Email = student.Email,
+                age = student.age,
+                GroupId = student.GroupId
+            }).State = EntityState.Modified;
 
             try
             {
@@ -100,20 +106,16 @@ namespace UniversityApi.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!StudentExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
         }
 
         // POST: api/Students
-       [HttpPost]
+        [HttpPost]
         public ActionResult<Student> PostStudent(StudentViewModel student)
         {
             if (_context.Students == null)
@@ -122,10 +124,13 @@ namespace UniversityApi.Controllers
             if (_context.Groups.Find(student.GroupId) == null)
                 return BadRequest("Incorrect GroupId");
 
-
-            var st = new Student(){
+            var st = new Student()
+            {
                 FirstName = student.FirstName,
                 LastName = student.LastName,
+                Pasel = student.Pasel,
+                PhoneNumber = student.PhoneNumber,
+                Email = student.Email,
                 age = student.age,
                 GroupId = student.GroupId
             };

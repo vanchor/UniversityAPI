@@ -22,7 +22,7 @@ namespace UniversityApi.Controllers
         {
             if (_context == null) return NotFound();
 
-            return _context.Groups;
+            return _context.Groups.Include(x => x.Subjects).Include(x => x.Students).ToList();
         }
 
         // GET: api/Groups/1
@@ -32,7 +32,7 @@ namespace UniversityApi.Controllers
             if (_context.Groups == null)
                 return NotFound();
 
-            var group = _context.Groups.Find(id);
+            var group = _context.Groups.Include(x => x.Subjects).Include(x => x.Students).FirstOrDefault(x => x.Id == id);
             if (group == null)
                 return NotFound();
 
@@ -46,27 +46,30 @@ namespace UniversityApi.Controllers
             if (_context.Groups == null)
                 return NotFound();
 
-            var group = _context.Groups.Find(id);
-            if (group == null)
-                return NotFound();
+            if (!GroupExists(id))
+                return NotFound("No group with such id");
 
             return _context.Students.Where(st => st.GroupId == id).ToList();
         }
 
         // GET: api/Groups/2/Subjects
         [HttpGet("{id}/Subjects")]
-        public ActionResult<IEnumerable<Subject>> GetGroupSubjects(int id)
+        public ActionResult<IEnumerable<Subject>?> GetGroupSubjects(int id)
         {
             if (_context.Groups == null)
                 return NotFound();
 
-            if (_context.Groups.Find(id) == null)
-                return NotFound();
+            if (!GroupExists(id))
+                return NotFound("No group with such id");
 
             return _context.Groups
-                    .Where(g => g.Id == id)
-                    .Include(st => st.Subjects)
-                    .First().Subjects.ToList();
+                .Select(x => new Group()
+                {
+                    Id = x.Id,
+                    Subjects = x.Subjects
+                })
+                .FirstOrDefault(x => x.Id == id)?
+                .Subjects?.ToList();
         }
 
         // POST: api/Groups/{id}/Subjects
@@ -76,7 +79,9 @@ namespace UniversityApi.Controllers
             if (_context.Groups == null)
                 return Problem("Entity set 'UniversityContext.Groups'  is null.");
 
-            var g = _context.Groups.Find(id);
+            var g = _context.Groups
+                .Include(x => x.Subjects)
+                .FirstOrDefault(x => x.Id == id);
             if (g == null)
                 return NotFound("No group with such id");
 
@@ -84,7 +89,10 @@ namespace UniversityApi.Controllers
             if (subject == null)
                 return NotFound("No subject with such id");
 
-            g.Subjects.Add(subject);
+            if (g.Subjects.Any(s => s.Id == subject.Id))
+                return BadRequest("This group already have this subject.");
+
+            g.Subjects?.Add(subject);
             _context.SaveChanges();
 
             return CreatedAtAction("GetGroups", new { Id = 1 }, g);
@@ -98,10 +106,11 @@ namespace UniversityApi.Controllers
             if (_context.Groups == null) return NotFound();
 
             _context.Entry(new Group(){
-                    Id = id,
-                    GradeName = group.GradeName,
-                    Section = group.Section
-                }).State = EntityState.Modified;
+                Id = id,
+                GradeName = group.GradeName,
+                Department = group.Department,
+                Semester = group.Semester
+            }).State = EntityState.Modified;
 
             try
             {
@@ -110,13 +119,9 @@ namespace UniversityApi.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!GroupExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
@@ -132,7 +137,8 @@ namespace UniversityApi.Controllers
             var g = new Group()
             {
                 GradeName = group.GradeName,
-                Section = group.Section
+                Department = group.Department,
+                Semester = group.Semester
             };
 
             _context.Groups.Add(g);
@@ -152,7 +158,7 @@ namespace UniversityApi.Controllers
             if (group == null)
                 return NotFound();
 
-            if (_context.Students.Where(st => st.GroupId == id) != null)
+            if (_context.Students.Any(st => st.GroupId == id))
                 return Problem("The group cannot be deleted because there are students in it.");
 
             _context.Groups.Remove(group);

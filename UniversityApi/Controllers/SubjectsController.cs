@@ -76,41 +76,40 @@ namespace UniversityApi.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!(_context.Subjects?.Any(e => e.Id == id)).GetValueOrDefault())
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
         }
 
-       /* // PATСH: api/Subjects/1
-        [HttpPatch("{id}")]
-        public ActionResult<Subject> PatctSubject(int id, [FromBody] JsonPatchDocument subjectVM)
+        // DELETE: api/Subjects/5
+        [HttpDelete("{id}")]
+        public IActionResult DeleteSubjects(int id)
         {
             if (_context.Subjects == null)
                 return NotFound();
 
-            var subject = _context.Subjects.Find(id);
-            if (subject == null)
+            var subjects = _context.Subjects.Find(id);
+            if (subjects == null)
                 return NotFound();
 
-            subjectVM.ApplyTo(subject);
+            _context.Subjects.Remove(subjects);
             _context.SaveChanges();
 
-            return subject;
-        }*/
+            return NoContent();
+        }
 
         private Subject SubjectVmToSubject(SubjectViewModel subjectVM)
         {
             var subject = new Subject()
             {
                 Name = subjectVM.Name,
-                Description = subjectVM.Description
+                Description = subjectVM.Description,
+                DepartmentID = subjectVM.DepartmentID,
+                numberOfHours = subjectVM.numberOfHours,
+                ECTS = subjectVM.ECTS
             };
 
             if (subjectVM.GroupsId != null)
