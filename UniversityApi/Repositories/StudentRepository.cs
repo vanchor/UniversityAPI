@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UniversityApi.Data;
 using UniversityApi.Models;
 
 namespace UniversityApi.Repositories
