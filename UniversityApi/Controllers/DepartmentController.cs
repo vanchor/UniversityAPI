@@ -14,6 +14,7 @@ namespace UniversityApi.Controllers
     public class DepartmentController : ControllerBase
     {
         private readonly IMongoCollection<Department> _departmentCollection;
+        private readonly IMongoCollection<University> _universityCollection;
 
         public DepartmentController(IOptions<UniversityMongoDbSettings> universityMongoDbSettings)
         {
@@ -25,6 +26,9 @@ namespace UniversityApi.Controllers
 
             _departmentCollection = mongoDatabase.GetCollection<Department>(
                 universityMongoDbSettings.Value.DepartmentCollectionName);
+
+            _universityCollection = mongoDatabase.GetCollection<University>(
+                universityMongoDbSettings.Value.UniversityCollectionName);
         }
 
         // GET: api/Department
@@ -99,6 +103,8 @@ namespace UniversityApi.Controllers
                 return NotFound("Incorrect id");
             if (id != updateDepartment.Id)
                 return BadRequest("The id in the request does not match the id in the body.");
+            if (_universityCollection.Find(x => x.Id == updateDepartment.UniversityId).FirstOrDefault() == null)
+                return BadRequest("Incorrect university ID");
 
             await _departmentCollection
                     .ReplaceOneAsync(
@@ -111,6 +117,9 @@ namespace UniversityApi.Controllers
         [HttpPost]
         public async Task<ActionResult> PostDepartment(DepartmentVM createDepartment)
         {
+            if (_universityCollection.Find(x => x.Id == createDepartment.UniversityId).FirstOrDefault() == null)
+                    return BadRequest("Incorrect university ID");
+
             var dep = new Department()
             {
                 Name = createDepartment.Name,

@@ -5,5 +5,6 @@
         public string ConnectionString { get; set; } = null!;
         public string DatabaseName { get; set; } = null!;
         public string DepartmentCollectionName { get; set; } = null!;
+        public string UniversityCollectionName { get; set; } = null!;
     }
 }
