@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UniversityApi.Models;
 
-namespace UniversityApi.Models
+namespace UniversityApi.Data
 {
     public class UniversityContext : DbContext
     {
